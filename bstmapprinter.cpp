@@ -70,7 +70,7 @@ ostream &BSTMap::printTreeLevel(ostream &out, queue<const Node *> &q, int width,
   const static char space = ' ';
   const static char underline = '_';
   int nodes = 0;
-  int maxN = pow(2, depth - 1);
+  int maxN = static_cast<int>(pow(2, depth - 1));
   int spaceForEachItem = static_cast<int>(width * pow(2, maxDepth - 1) / maxN);
   string bigspace = string(static_cast<uint64_t>(spaceForEachItem / 4), space);
   while (nodes++ < maxN) {
