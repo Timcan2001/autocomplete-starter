@@ -95,6 +95,9 @@ public:
   // returns true if item successfully erased - BONUS
   bool erase(const key_type &k);
 
+  // given a prefix string, return all values that match
+  // the prefix. Traverses both branches of the tree once
+  // a value matching the prefix is found.
   vector<value_type> getAll(const key_type &k) const;
 
   // trees are equal if they have the same structure
