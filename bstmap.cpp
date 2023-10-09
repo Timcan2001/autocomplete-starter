@@ -41,6 +41,11 @@ BSTMap::mapped_type &BSTMap::operator[](const key_type &k) {
   return root->data.second;
 }
 
+// returns a vector of key-value pairs that partially match the key
+// Main function used by autocomplete
+// Might traverse both left and right subbranches of a node
+// Example: getall("hel")
+// Return: { (hello, 10), (help, 20)}
 vector<BSTMap::value_type> BSTMap::getAll(const key_type &k) const {
   vector<value_type> v;
   return v;
