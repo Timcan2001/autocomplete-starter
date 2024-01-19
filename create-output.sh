@@ -21,55 +21,27 @@ if hash id 2>/dev/null; then
   id
 fi
 
-# If we are running as a GitHub action, install programs
-GITHUB_MACHINE='Linux fv-az'
-
-if [[ $MACHINE == *"${GITHUB_MACHINE}"* ]]; then
-  echo "====================================================="
-  echo "Running as a GitHub action, attempting to install programs"
-  echo "====================================================="
-  sudo apt-get update
-  sudo apt-get install llvm clang-tidy valgrind
-fi
-
-# If we are running on CSSLAB and 
-# clang-tidy is not active, print a message
-CSSLAB_MACHINE='Linux csslab'
-
-CLANG_TIDY_EXE='/opt/rh/llvm-toolset-7.0/root/bin/clang-tidy'
-
-if [[ $MACHINE == *"${CSSLAB_MACHINE}"* ]]; then
-    if ! hash clang-tidy 2>/dev/null && [ -e "${CLANG_TIDY_EXE}" ] ; then
-        echo "====================================================="
-        echo "ERROR ERROR ERROR ERROR ERROR ERROR ERROR ERROR ERROR "
-        echo "clang-tidy NOT found in path (but is in $CLANG_TIDY_EXE )"
-        echo "Add the following command to ~/.bashrc file"
-        echo "     source scl_source enable llvm-toolset-7.0"
-        echo "You can add the command by executing the following line"
-        echo "     echo \"source scl_source enable llvm-toolset-7.0\" >> ~/.bashrc"
-        echo "====================================================="
-        exit
-    fi
-fi
-
 # delete a.out, do not give any errors if it does not exist
 rm ./a.out 2>/dev/null
 
 echo "====================================================="
-echo "1. Compiles without warnings with -Wall -Wextra flags"
+echo "1. If the section below is empty, the program compiles "
+echo "   without warnings with -Wall -Wextra flags"
 echo "====================================================="
 
 g++ -g -std=c++11 -Wall -Wextra -Wno-sign-compare *.cpp
 
 echo "====================================================="
-echo "2. Runs and produces correct output"
+echo "2. If the section below is empty or has the expected output "
+echo "    the program puns and produces correct output"
 echo "====================================================="
 
 # Execute program
 $EXEC_PROGRAM
 
 echo "====================================================="
-echo "3. clang-tidy warnings are fixed"
+echo "3. If the section below is empty, then there are no clang-tidy warnings "
+echo "   (ignore warnings from system headers, such as \"13554 warnings generated.\")"
 echo "====================================================="
 
 if hash clang-tidy 2>/dev/null; then
@@ -79,7 +51,8 @@ else
 fi
 
 echo "====================================================="
-echo "4. clang-format does not find any formatting issues"
+echo "4. If the section below is empty, clang-format does not find any formatting issues"
+echo "   You can fix formatting errors using \"clang-format -i <filename>\" on command line"
 echo "====================================================="
 
 if hash clang-format 2>/dev/null; then
@@ -95,7 +68,7 @@ else
 fi
 
 echo "====================================================="
-echo "5. No memory leaks using g++"
+echo "5. If there are any memory leaks, it should be in the output below"
 echo "====================================================="
 
 rm ./a.out 2>/dev/null
@@ -106,7 +79,8 @@ $EXEC_PROGRAM > /dev/null 2> /dev/null
 
 
 echo "====================================================="
-echo "6. No memory leaks using valgrind, look for \"definitely lost\" "
+echo "6. Using valgrind to check for memory leaks"
+echo "   Check for \"definitely lost\" in the output below"
 echo "====================================================="
 
 rm ./a.out 2>/dev/null
