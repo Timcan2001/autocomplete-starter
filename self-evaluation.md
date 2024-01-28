@@ -23,6 +23,9 @@ Q: All public functions have been implemented: ENTER_NUMBER
 - Helpers: empty, size, height, clear, contains, count
 - Accessor/Modifiers: operator[], getAll
 
+Q: Does the getAll function traverse tonly part of the tree based on the prefix (rather than traversing the whole tree and then filtering the results): ENTER_NUMBER
+- -1 for always traversing the whole tree.
+
 Q: Bonus function - erase: ENTER_NUMBER
 
 - +1 if erase has been successfully implemented
@@ -50,12 +53,6 @@ Q: -2 for any detected memory leak: ENTER_NUMBER
 
 - Check under *5. No memory leaks using g++*
 - Check under *6. No memory leaks using valgrind*
-
-Q: Do the tests sufficiently test the code: ENTER_NUMBER
-
-- -1 for each large block of code not executed
-- -2 for each function that is never called when testing
-- Check under *7. Tests have full code coverage* paying attention to *The lines below were never executed*
 
 Q: Are all functions in .h and .cpp file documents (min -3): ENTER_NUMBER
 
