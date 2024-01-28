@@ -56,11 +56,6 @@ Running clang-format on ./testbst.cpp
 ==3886== For lists of detected and suppressed errors, rerun with: -s
 ==3886== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
 =====================================================
-7. Tests have full code coverage
-=====================================================
-...
-deleted
-...
 Sun Jan 17 19:36:34 PST 2021
 =====================================================
 To create an output.txt file with all the output from this script
