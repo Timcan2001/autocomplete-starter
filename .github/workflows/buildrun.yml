@@ -15,5 +15,5 @@ jobs:
     
     - uses: actions/checkout@v2
 
-    - name: Run create-output.sh file
-      run: chmod 755 create-output.sh; ./run-full.sh
+    - name: Run run-full.sh file
+      run: chmod 755 run-full.sh; ./run-full.sh
