@@ -120,6 +120,10 @@ private:
   // refer to data type "struct Node" as Node
   using Node = struct Node;
 
+  Node *copyTree(Node *otherRoot);
+
+  void deleteTree(Node *curr);
+
   // print Node
   friend ostream &operator<<(ostream &out, const Node &n);
 

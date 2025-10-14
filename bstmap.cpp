@@ -11,7 +11,7 @@
 using namespace std;
 
 // copy constructor
-BSTMap::BSTMap(const BSTMap &bst) {}
+BSTMap::BSTMap(const BSTMap &bst) { root = copyTree(bst.root); }
 
 // given an array of length n
 // create a tree to have all items in that array
@@ -22,13 +22,17 @@ BSTMap::BSTMap(const vector<value_type> &v) {}
 BSTMap::~BSTMap() {}
 
 // delete all nodes in tree
-void BSTMap::clear() {}
+void BSTMap::clear() { deleteTree(root); }
 
 // true if no nodes in BST
-bool BSTMap::empty() const { return true; }
+bool BSTMap::empty() const { return root == nullptr; }
 
 // Number of nodes in BST
-int BSTMap::size() const { return 0; }
+int BSTMap::size() const {
+  int size;
+  if (root == nullptr)
+    return 0;
+}
 
 // true if item is in BST
 bool BSTMap::contains(const key_type &key) const { return true; }
@@ -53,11 +57,40 @@ vector<BSTMap::value_type> BSTMap::getAll(const key_type &k) const {
 
 // 0 if empty, 1 if only root, otherwise
 // height of root is max height of subtrees + 1
-int BSTMap::height() const { return 0; }
+int BSTMap::height() const {
+  if (root == nullptr)
+    return 0;
+  return 1 + getHeight(root);
+}
 
 // height of a Node, nullptr is 0, root is 1, static, no access to 'this'
 // helper function to height(), used by printVertical
-int BSTMap::getHeight(const Node *n) { return 0; }
+int BSTMap::getHeight(const Node *n) {
+  if (n == nullptr)
+    return 0;
+
+  return 1 + max(getHeight(n->right), getHeight(n->left));
+}
+
+BSTMap::Node *BSTMap::copyTree(Node *curr) {
+  if (curr == nullptr)
+    return nullptr;
+  Node *newCurr = new Node;
+  newCurr->data = curr->data;
+  newCurr->left = copyTree(curr->left);
+  newCurr->right = copyTree(curr->right);
+
+  return newCurr;
+}
+
+void BSTMap::deleteTree(Node *curr) {
+  if (curr == nullptr) {
+    return;
+  }
+  deleteTree(curr->left);
+  deleteTree(curr->right);
+  delete curr;
+}
 
 // same as contains, but returns 1 or 0
 // compatibility with std::map
