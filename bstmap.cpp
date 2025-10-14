@@ -98,13 +98,24 @@ size_t BSTMap::count(const string &k) const { return 0; }
 
 // inorder traversal: left-root-right
 // takes a function that takes a single parameter of type T
-void BSTMap::inorder(void visit(const value_type &item)) const {}
-
+void BSTMap::inorder(void visit(const value_type &item)) const {
+  visit(root->left->data);
+  visit(root->data);
+  visit(root->right->data);
+}
 // preorder traversal: root-left-right
-void BSTMap::preorder(void visit(const value_type &item)) const {}
+void BSTMap::preorder(void visit(const value_type &item)) const {
+  visit(root->data);
+  visit(root->left->data);
+  visit(root->right->data);
+}
 
 // postorder traversal: left-right-root
-void BSTMap::postorder(void visit(const value_type &item)) const {}
+void BSTMap::postorder(void visit(const value_type &item)) const {
+  visit(root->left->data);
+  visit(root->right->data);
+  visit(root->data);
+}
 
 // balance the BST by saving all nodes to a vector inorder
 // and then recreating the BST from the vector
