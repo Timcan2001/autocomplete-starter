@@ -41,8 +41,7 @@ bool BSTMap::contains(const key_type &key) const { return true; }
 // If k does not match any key, inserts a new element
 // with that key and returns a reference to its mapped value.
 BSTMap::mapped_type &BSTMap::operator[](const key_type &k) {
-  assert(false && "operator[] has not been implemented");
-  return root->data.second;
+  return bracketHelper(root, k);
 }
 
 // returns a vector of key-value pairs that partially match the key
@@ -70,6 +69,28 @@ int BSTMap::getHeight(const Node *n) {
     return 0;
 
   return 1 + max(getHeight(n->right), getHeight(n->left));
+}
+
+BSTMap::mapped_type &BSTMap::bracketHelper(Node *&curr, const key_type &k) {
+  if (curr == nullptr) {
+    Node *newNode = new Node;
+    newNode->data.first = k;
+    newNode->data.second = 0;
+    curr = newNode;
+    curr->left = nullptr;
+    curr->right = nullptr;
+    return curr->data.second;
+  }
+
+  if (k < curr->data.first) {
+    return bracketHelper(curr->left, k);
+  }
+  if (k > curr->data.first) {
+    return bracketHelper(curr->right, k);
+  }
+  if (curr->data.first == k) {
+    return curr->data.second;
+  }
 }
 
 BSTMap::Node *BSTMap::copyTree(Node *curr) {

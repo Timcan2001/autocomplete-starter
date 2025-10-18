@@ -120,6 +120,8 @@ private:
   // refer to data type "struct Node" as Node
   using Node = struct Node;
 
+  mapped_type &bracketHelper(Node *&curr, const key_type &k);
+
   Node *copyTree(Node *otherRoot);
 
   void deleteTree(Node *curr);
