@@ -64,7 +64,7 @@ void test02() {
   b["b"] = 3;
   b["e"] = 4;
   b["z"] = 50;
-  // cout << b;
+  cout << b;
 
   globalSS.str("");
   b.inorder(printer);

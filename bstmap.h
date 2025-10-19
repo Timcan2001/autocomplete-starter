@@ -12,6 +12,7 @@
 #define BSTMAP_H
 
 #include <cstdint>
+#include <functional>
 #include <iostream>
 #include <queue>
 #include <string>
@@ -120,12 +121,24 @@ private:
   // refer to data type "struct Node" as Node
   using Node = struct Node;
 
+  int sizeH(Node *node) const;
+
+  Node *buildFromSorted(const vector<value_type> &v, int start, int end);
+
+  bool equalsH(const Node *t1, const Node *t2) const;
+
   mapped_type &bracketHelper(Node *&curr, const key_type &k);
 
   Node *copyTree(Node *otherRoot);
 
   void deleteTree(Node *curr);
 
+  void inorderH(function<void(const value_type &item)> visit,
+                const Node *node) const;
+
+  void preorderH(void visit(const value_type &item), const Node *node) const;
+
+  void postorderH(void visit(const value_type &item), const Node *node) const;
   // print Node
   friend ostream &operator<<(ostream &out, const Node &n);
 

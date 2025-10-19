@@ -16,22 +16,53 @@ BSTMap::BSTMap(const BSTMap &bst) { root = copyTree(bst.root); }
 // given an array of length n
 // create a tree to have all items in that array
 // with the minimum height (uses same helper as rebalance)
-BSTMap::BSTMap(const vector<value_type> &v) {}
+BSTMap::BSTMap(const vector<value_type> &v) {
+  root = buildFromSorted(v, 0, v.size());
+}
+
+BSTMap::Node *BSTMap::buildFromSorted(const vector<value_type> &v, int start,
+                                      int end) {
+  if (start >= end) {
+    return nullptr;
+  }
+
+  int mid = start + (end - start) / 2;
+
+  Node *newNode = new Node;
+  newNode->data = v[mid];
+  newNode->left = nullptr;
+  newNode->right = nullptr;
+  newNode->left = buildFromSorted(v, start, mid);
+  newNode->right = buildFromSorted(v, mid + 1, end);
+
+  return newNode;
+}
 
 // destructor
 BSTMap::~BSTMap() {}
 
 // delete all nodes in tree
-void BSTMap::clear() { deleteTree(root); }
+void BSTMap::clear() {
+  deleteTree(root);
+  root = nullptr;
+}
 
 // true if no nodes in BST
 bool BSTMap::empty() const { return root == nullptr; }
 
 // Number of nodes in BST
 int BSTMap::size() const {
-  int size;
   if (root == nullptr)
     return 0;
+
+  return sizeH(root);
+}
+
+int BSTMap::sizeH(Node *node) const {
+  if (node == nullptr)
+    return 0;
+
+  return 1 + sizeH(node->left) + sizeH(node->right);
 }
 
 // true if item is in BST
@@ -56,11 +87,7 @@ vector<BSTMap::value_type> BSTMap::getAll(const key_type &k) const {
 
 // 0 if empty, 1 if only root, otherwise
 // height of root is max height of subtrees + 1
-int BSTMap::height() const {
-  if (root == nullptr)
-    return 0;
-  return 1 + getHeight(root);
-}
+int BSTMap::height() const { return getHeight(root); }
 
 // height of a Node, nullptr is 0, root is 1, static, no access to 'this'
 // helper function to height(), used by printVertical
@@ -120,31 +147,91 @@ size_t BSTMap::count(const string &k) const { return 0; }
 // inorder traversal: left-root-right
 // takes a function that takes a single parameter of type T
 void BSTMap::inorder(void visit(const value_type &item)) const {
-  visit(root->left->data);
-  visit(root->data);
-  visit(root->right->data);
+  if (root == nullptr)
+    return;
+
+  inorderH(visit, root);
 }
+
+void BSTMap::inorderH(function<void(const value_type &item)> visit,
+                      const Node *node) const {
+  if (node == nullptr)
+    return;
+
+  inorderH(visit, node->left);
+  visit(node->data);
+  inorderH((visit), node->right);
+}
+
 // preorder traversal: root-left-right
 void BSTMap::preorder(void visit(const value_type &item)) const {
-  visit(root->data);
-  visit(root->left->data);
-  visit(root->right->data);
+  if (root == nullptr)
+    return;
+
+  preorderH(visit, root);
+}
+
+void BSTMap::preorderH(void visit(const value_type &item),
+                       const Node *node) const {
+  if (node == nullptr)
+    return;
+
+  visit(node->data);
+  preorderH(visit, node->left);
+  preorderH(visit, node->right);
 }
 
 // postorder traversal: left-right-root
 void BSTMap::postorder(void visit(const value_type &item)) const {
-  visit(root->left->data);
-  visit(root->right->data);
-  visit(root->data);
+  if (root == nullptr)
+    return;
+
+  postorderH(visit, root);
+}
+
+void BSTMap::postorderH(void visit(const value_type &item),
+                        const Node *node) const {
+  if (node == nullptr)
+    return;
+
+  postorderH(visit, node->left);
+  postorderH(visit, node->right);
+  visit(node->data);
 }
 
 // balance the BST by saving all nodes to a vector inorder
 // and then recreating the BST from the vector
-void BSTMap::rebalance() {}
+void BSTMap::rebalance() {
+  if (root == nullptr)
+    return;
+
+  vector<value_type> nodes;
+  auto visit = [&nodes](const value_type &item) { nodes.push_back(item); };
+  inorderH(visit, root);
+  clear();
+  root = buildFromSorted(nodes, 0, nodes.size());
+}
 
 // trees are equal if they have the same structure
 // AND the same item values at all the nodes
-bool BSTMap::operator==(const BSTMap &other) const { return true; }
+bool BSTMap::operator==(const BSTMap &other) const {
+  return equalsH(root, other.root);
+}
+
+bool BSTMap::equalsH(const Node *t1, const Node *t2) const {
+  if (t1 == nullptr && t2 == nullptr) {
+    return true;
+  }
+
+  if (t1 == nullptr || t2 == nullptr || t1->data.first != t2->data.first ||
+      t1->data.second != t2->data.second) {
+    return false;
+  }
+
+  return equalsH(t1->left, t2->left) && equalsH(t1->right, t2->right);
+}
 
 // not == to each other
-bool BSTMap::operator!=(const BSTMap &other) const { return true; }
+bool BSTMap::operator!=(const BSTMap &other) const {
+  return !(equalsH(root, other.root));
+}
