@@ -20,13 +20,13 @@ BSTMap::BSTMap(const vector<value_type> &v) {
   root = buildFromSorted(v, 0, v.size());
 }
 
-BSTMap::Node *BSTMap::buildFromSorted(const vector<value_type> &v, int start,
-                                      int end) {
+BSTMap::Node *BSTMap::buildFromSorted(const vector<value_type> &v, size_t start,
+                                      size_t end) {
   if (start >= end) {
     return nullptr;
   }
 
-  int mid = start + (end - start) / 2;
+  size_t mid = start + (end - start) / 2;
 
   Node *newNode = new Node;
   newNode->data = v[mid];
@@ -39,7 +39,7 @@ BSTMap::Node *BSTMap::buildFromSorted(const vector<value_type> &v, int start,
 }
 
 // destructor
-BSTMap::~BSTMap() {}
+BSTMap::~BSTMap() { clear(); }
 
 // delete all nodes in tree
 void BSTMap::clear() {
@@ -52,50 +52,43 @@ bool BSTMap::empty() const { return root == nullptr; }
 
 // Number of nodes in BST
 int BSTMap::size() const {
-  if (root == nullptr)
+  if (root == nullptr) {
     return 0;
-
+  }
   return sizeH(root);
 }
 
 int BSTMap::sizeH(Node *node) const {
-  if (node == nullptr)
+  if (node == nullptr) {
     return 0;
-
+  }
   return 1 + sizeH(node->left) + sizeH(node->right);
 }
 
 // true if item is in BST
-bool BSTMap::contains(const key_type &key) const { return true; }
+bool BSTMap::contains(const key_type &key) const {
+  if (root == nullptr) {
+    return false;
+  }
+  Node *curr = root;
+  while (curr != nullptr) {
+    if (key == curr->data.first) {
+      return true;
+    }
+    if (key < curr->data.first) {
+      curr = curr->left;
+    } else {
+      curr = curr->right;
+    }
+  }
+  return false;
+}
 
 // If k matches the key returns a reference to its value
 // If k does not match any key, inserts a new element
 // with that key and returns a reference to its mapped value.
 BSTMap::mapped_type &BSTMap::operator[](const key_type &k) {
   return bracketHelper(root, k);
-}
-
-// returns a vector of key-value pairs that partially match the key
-// Main function used by autocomplete
-// Might traverse both left and right subbranches of a node
-// Example: getall("hel")
-// Return: { (hello, 10), (help, 20)}
-vector<BSTMap::value_type> BSTMap::getAll(const key_type &k) const {
-  vector<value_type> v;
-  return v;
-}
-
-// 0 if empty, 1 if only root, otherwise
-// height of root is max height of subtrees + 1
-int BSTMap::height() const { return getHeight(root); }
-
-// height of a Node, nullptr is 0, root is 1, static, no access to 'this'
-// helper function to height(), used by printVertical
-int BSTMap::getHeight(const Node *n) {
-  if (n == nullptr)
-    return 0;
-
-  return 1 + max(getHeight(n->right), getHeight(n->left));
 }
 
 BSTMap::mapped_type &BSTMap::bracketHelper(Node *&curr, const key_type &k) {
@@ -118,11 +111,53 @@ BSTMap::mapped_type &BSTMap::bracketHelper(Node *&curr, const key_type &k) {
   if (curr->data.first == k) {
     return curr->data.second;
   }
+  return curr->data.second;
+}
+
+// returns a vector of key-value pairs that partially match the key
+// Main function used by autocomplete
+// Might traverse both left and right subbranches of a node
+// Example: getall("hel")
+// Return: { (hello, 10), (help, 20)}
+vector<BSTMap::value_type> BSTMap::getAll(const key_type &k) const {
+  vector<value_type> v;
+  getAllH(root, k, v);
+  return v;
+}
+
+void BSTMap::getAllH(const Node *curr, const key_type &prefix,
+                     vector<value_type> &out) const {
+  if (curr == nullptr) {
+    return;
+  }
+  if (curr->data.first.rfind(prefix, 0) == 0) {
+    getAllH(curr->left, prefix, out);
+    out.push_back(curr->data);
+    getAllH(curr->right, prefix, out);
+  } else if (curr->data.first < prefix) {
+    getAllH(curr->right, prefix, out);
+  } else {
+    getAllH(curr->left, prefix, out);
+  }
+}
+
+// 0 if empty, 1 if only root, otherwise
+// height of root is max height of subtrees + 1
+int BSTMap::height() const { return getHeight(root); }
+
+// height of a Node, nullptr is 0, root is 1, static, no access to 'this'
+// helper function to height(), used by printVertical
+int BSTMap::getHeight(const Node *n) {
+  if (n == nullptr) {
+    return 0;
+  }
+  return 1 + max(getHeight(n->right), getHeight(n->left));
 }
 
 BSTMap::Node *BSTMap::copyTree(Node *curr) {
-  if (curr == nullptr)
+  if (curr == nullptr) {
     return nullptr;
+  }
   Node *newCurr = new Node;
   newCurr->data = curr->data;
   newCurr->left = copyTree(curr->left);
@@ -142,22 +177,38 @@ void BSTMap::deleteTree(Node *curr) {
 
 // same as contains, but returns 1 or 0
 // compatibility with std::map
-size_t BSTMap::count(const string &k) const { return 0; }
+size_t BSTMap::count(const key_type &k) const {
+  if (root == nullptr) {
+    return 0;
+  }
+  Node *curr = root;
+  while (curr != nullptr) {
+    if (k == curr->data.first) {
+      return 1;
+    }
+    if (k < curr->data.first) {
+      curr = curr->left;
+    } else {
+      curr = curr->right;
+    }
+  }
+  return 0;
+}
 
 // inorder traversal: left-root-right
 // takes a function that takes a single parameter of type T
 void BSTMap::inorder(void visit(const value_type &item)) const {
-  if (root == nullptr)
+  if (root == nullptr) {
     return;
-
+  }
   inorderH(visit, root);
 }
 
 void BSTMap::inorderH(function<void(const value_type &item)> visit,
                       const Node *node) const {
-  if (node == nullptr)
+  if (node == nullptr) {
     return;
-
+  }
   inorderH(visit, node->left);
   visit(node->data);
   inorderH((visit), node->right);
@@ -165,17 +216,17 @@ void BSTMap::inorderH(function<void(const value_type &item)> visit,
 
 // preorder traversal: root-left-right
 void BSTMap::preorder(void visit(const value_type &item)) const {
-  if (root == nullptr)
+  if (root == nullptr) {
     return;
-
+  }
   preorderH(visit, root);
 }
 
 void BSTMap::preorderH(void visit(const value_type &item),
                        const Node *node) const {
-  if (node == nullptr)
+  if (node == nullptr) {
     return;
-
+  }
   visit(node->data);
   preorderH(visit, node->left);
   preorderH(visit, node->right);
@@ -183,17 +234,17 @@ void BSTMap::preorderH(void visit(const value_type &item),
 
 // postorder traversal: left-right-root
 void BSTMap::postorder(void visit(const value_type &item)) const {
-  if (root == nullptr)
+  if (root == nullptr) {
     return;
-
+  }
   postorderH(visit, root);
 }
 
 void BSTMap::postorderH(void visit(const value_type &item),
                         const Node *node) const {
-  if (node == nullptr)
+  if (node == nullptr) {
     return;
-
+  }
   postorderH(visit, node->left);
   postorderH(visit, node->right);
   visit(node->data);
@@ -202,9 +253,9 @@ void BSTMap::postorderH(void visit(const value_type &item),
 // balance the BST by saving all nodes to a vector inorder
 // and then recreating the BST from the vector
 void BSTMap::rebalance() {
-  if (root == nullptr)
+  if (root == nullptr) {
     return;
-
+  }
   vector<value_type> nodes;
   auto visit = [&nodes](const value_type &item) { nodes.push_back(item); };
   inorderH(visit, root);

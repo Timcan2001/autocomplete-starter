@@ -123,13 +123,16 @@ private:
 
   int sizeH(Node *node) const;
 
-  Node *buildFromSorted(const vector<value_type> &v, int start, int end);
+  void getAllH(const Node *curr, const key_type &prefix,
+               vector<value_type> &out) const;
+
+  Node *buildFromSorted(const vector<value_type> &v, size_t start, size_t end);
 
   bool equalsH(const Node *t1, const Node *t2) const;
 
   mapped_type &bracketHelper(Node *&curr, const key_type &k);
 
-  Node *copyTree(Node *otherRoot);
+  Node *copyTree(Node *curr);
 
   void deleteTree(Node *curr);
 

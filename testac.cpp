@@ -12,6 +12,7 @@ void testAC01() {
   Autocomplete ac;
   ac.readFile("small.txt");
   auto v = ac.complete("hel");
+  cout << v.size() << endl;
   assert(v.size() == 2);
   assert(v[0].first == "help");
   assert(v[0].second == 20);
@@ -38,5 +39,5 @@ void testAC02() {
 void testACAll() {
   testAC01();
   testAC02();
-  // TODO(student) Add more tests
+  //   TODO(student) Add more tests
 }
